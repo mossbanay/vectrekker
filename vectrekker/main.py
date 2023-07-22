@@ -24,7 +24,7 @@ class BaseConfig(BaseSettings):
 class PineconeConfig(BaseSettings):
     api_key: str = Field(..., env="PINECONE_API_KEY")
     environment: str = Field(..., env="PINECONE_ENVIRONMENT")
-    index_name: str = Field(..., default="vectrekker", env="PINECONE_INDEX")
+    index_name: str = Field(default="vectrekker", env="PINECONE_INDEX")
 
 
 class OpenAIConfig(BaseSettings):
@@ -57,6 +57,15 @@ def stat_modified_time(path: Path):
     return int(modified_time)
 
 
+def walk(path: Path) -> Iterable[Path]:
+    """Recursively walk a path and yield all files."""
+    for p in Path(path).iterdir():
+        if p.is_dir():
+            yield from walk(p)
+            continue
+        yield p.resolve()
+
+
 class FileCache:
     """A simple file cache for storing the last edit time of a file."""
 
@@ -80,19 +89,20 @@ class FileCache:
     @staticmethod
     def create_db(path: Path):
         """Create a new database or connect to an existing one."""
-
-        if not path.exists():
-            conn = sqlite3.connect(path)
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS files (path TEXT PRIMARY KEY, last_edit_time INTEGER)"
+        conn = sqlite3.connect(path)
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS files (
+                path TEXT PRIMARY KEY,
+                last_edit_time INTEGER
             )
-            conn.commit()
-            conn.close()
-
-        return sqlite3.connect(path)
+            """
+        )
+        conn.commit()
+        return conn
 
     def get_edit_time(self, path: Path):
-        """Get the last edit time of a file from the database or zero if not seen before."""
+        """Get the last modified time for a file or 0 if unknown."""
         cursor = self.conn.cursor()
         cursor.execute("SELECT last_edit_time FROM files WHERE path = ?", (str(path),))
         result = cursor.fetchone()
@@ -111,14 +121,6 @@ class FileCache:
         self.conn.commit()
 
 
-def walk(path: Path) -> Iterable[Path]:
-    for p in Path(path).iterdir():
-        if p.is_dir():
-            yield from walk(p)
-            continue
-        yield p.resolve()
-
-
 def main(dry_run: bool = typer.Option(False)):
     """VecTrekker
 
@@ -131,15 +133,15 @@ def main(dry_run: bool = typer.Option(False)):
     files_to_reindex: list[Path] = []
 
     with FileCache(Path.home() / ".vectrekker" / "cache.db") as conn:
-        for f in walk(Path(config.base.content_folder)):
-            if not content_regex.match(str(f)):
+        for p in walk(Path(config.base.content_folder)):
+            if not content_regex.match(str(p)):
                 continue
 
-            last_edit_time = conn.get_edit_time(entry)
-            current_edit_time = stat_modified_time(entry)
+            last_edit_time = conn.get_edit_time(p)
+            current_edit_time = stat_modified_time(p)
 
             if current_edit_time > last_edit_time:
-                files_to_reindex.append(entry)
+                files_to_reindex.append(p)
 
     print(f"{len(files_to_reindex)} file(s) have changed")
 
