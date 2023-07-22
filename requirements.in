@@ -1,1 +1,3 @@
 toml
+pinecone-client
+typer

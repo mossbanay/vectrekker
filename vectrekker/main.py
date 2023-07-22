@@ -1,3 +1,4 @@
+import typer
 import os
 import re
 import sqlite3
@@ -78,7 +79,13 @@ def load_config() -> dict[str, Any]:
     config = toml.loads(config_file_contents)
     return config
 
-def main():
+def main(dry_run: bool = typer.Option(False)):
+    """VecTrekker
+
+    VecTrekker is a simple utility used to index content on disk and upsert it
+    to a vector store for usage with LLMs.
+    """
+
     config = load_config()
     content_regex = re.compile(config.get('content_regex', CONTENT_REGEX_DEFAULT))
 
@@ -90,6 +97,9 @@ def main():
                 candidate_files.append(os.path.join(root, f))
 
     conn = FileCache(Path.home() / ".vectrekker" / "cache.db")
+
+    files_to_reindex = []
+
     for entry in candidate_files:
         print(entry)
         last_edit_time = conn.get_edit_time(entry)
@@ -98,11 +108,18 @@ def main():
         print(last_edit_time, current_edit_time)
 
         if current_edit_time > last_edit_time:
-            print(f"File has changed: {entry}")
+            files_to_reindex.append(entry)
 
-            # TODO: Tokenize the file and submit embedding to vector store
 
-            conn.reset_edit_time(entry)
+    for entry in files_to_reindex:
+        print(f"File has changed: {entry}")
+
+        if dry_run:
+            continue
+
+        # TODO: Tokenize the file and submit embedding to vector store
+
+        conn.reset_edit_time(entry)
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)
