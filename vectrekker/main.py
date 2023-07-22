@@ -27,9 +27,14 @@ class PineconeConfig(BaseSettings):
     index_name: str = Field(..., default="vectrekker", env="PINECONE_INDEX")
 
 
+class OpenAIConfig(BaseSettings):
+    api_key: str = Field(..., env="OPENAI_API_KEY")
+
+
 class Config(BaseSettings):
     base: BaseConfig
     pinecone: PineconeConfig
+    openai: OpenAIConfig
 
 
 def load_config() -> Config:
@@ -162,6 +167,7 @@ def main(dry_run: bool = typer.Option(False)):
         # TODO: Currently we assume that all documents are less than 8191 tokens
         assert len(toks) < 8191, "Document is too long, splitting not yet supported"
 
+        os.environ["OPENAI_API_KEY"] = config.openai.api_key
         embd = openai.Embedding.create(
             input=file_contents, model="text-embedding-ada-002"
         )["data"][0]["embedding"]

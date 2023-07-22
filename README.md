@@ -16,6 +16,9 @@ pip install vectrekker
 vectrekker --dry-run
 ```
 
+You can adjust the configuration in `~/.vectrekker/config.toml` to add your
+credentials for Pinecone, as well as OpenAI.
+
 ## Scheduling VecTrekker
 
 It's suggested that you setup a crontab for VecTrekker to periodically scan
