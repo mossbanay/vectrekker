@@ -143,6 +143,10 @@ def main(dry_run: bool = typer.Option(False)):
             if current_edit_time > last_edit_time:
                 files_to_reindex.append(p)
 
+    if len(files_to_reindex) == 0:
+        print("No files have changed, exiting")
+        return
+
     print(f"{len(files_to_reindex)} file(s) have changed")
 
     if dry_run:
@@ -163,6 +167,7 @@ def main(dry_run: bool = typer.Option(False)):
     encoder = tiktoken.get_encoding("cl100k_base")
 
     for entry in files_to_reindex:
+        print(entry)
         file_contents = entry.read_text()
         toks = encoder.encode(file_contents)
 
