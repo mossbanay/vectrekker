@@ -6,6 +6,9 @@ VecTrekker is a simple utility to easily walk through a directory of files, and
 sync them to a vector database (for example, [Pinecone]). You can use it (for
 example) to index your notes for use with an LLM chain.
 
+The current tokenizer is `cl100k_base` and the current embedding model used is
+`text-embedding-ada-002` from OpenAI.
+
 ## Quick-start guide
 
 ```bash

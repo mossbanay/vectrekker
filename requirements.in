@@ -1,3 +1,10 @@
-toml
 pinecone-client ~= 2.0
+toml
+pydantic
+pydantic-settings
 typer
+black
+ruff
+isort
+tiktoken
+openai
