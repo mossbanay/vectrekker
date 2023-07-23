@@ -26,7 +26,7 @@ your directories again, and update any files that are out of date. An example
 crontab scanning every two hours is
 
 ```cron
-0 */2 * * * ~/.vectrekker/.venv/bin/vectrekker
+0 * * * * date >> ~/.vectrekker/vectrekker.log && ~/dev/vectrekker/.venv/bin/vectrekker 2>&1 >> ~/.vectrekker/vectrekker.log
 ```
 
 ## Vector database support
