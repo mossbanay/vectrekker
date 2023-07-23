@@ -4,6 +4,7 @@ import sqlite3
 from pathlib import Path
 from types import TracebackType
 from typing import Iterable, Optional, Type
+
 import openai
 import pinecone
 import tiktoken
