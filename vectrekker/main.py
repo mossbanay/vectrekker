@@ -11,7 +11,7 @@ import tiktoken
 import toml
 import typer
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings        import BaseSettings
 
 app = typer.Typer()
 
