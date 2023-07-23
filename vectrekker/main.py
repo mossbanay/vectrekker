@@ -14,7 +14,6 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 app = typer.Typer()
-blah = 1
 
 
 class BaseConfig(BaseSettings):
@@ -184,6 +183,8 @@ def main(dry_run: bool = typer.Option(False)):
         )["data"][0]["embedding"]
 
         index.upsert(vectors=[(str(entry), embd, {})])
+
+        blah = 1
 
         with FileCache(Path.home() / ".vectrekker" / "cache.db") as conn:
             conn.reset_edit_time(entry)
