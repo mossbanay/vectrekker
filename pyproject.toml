@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vectrekker"
+authors = [
+    {name = "Moss Ebeling"},
+]
+description = "Utility for automatically maintaining embeddings of text content"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["embeddings"]
+license = {text="MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "pinecone-client ~= 2.0",
+    "toml",
+    "pydantic",
+    "pydantic-settings",
+    "typer",
+    "tiktoken",
+    "openai"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["black", "ruff", "isort"]
+
+[project.scripts]
+vectrekker = "vectrekker.main:app"

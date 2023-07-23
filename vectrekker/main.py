@@ -13,6 +13,8 @@ import typer
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+app = typer.Typer()
+
 
 class BaseConfig(BaseSettings):
     content_folder: str
@@ -106,7 +108,7 @@ class FileCache:
         cursor = self.conn.cursor()
         cursor.execute("SELECT last_edit_time FROM files WHERE path = ?", (str(path),))
         result = cursor.fetchone()
-        return result[0] or 0
+        return result[0] if result is not None else 0
 
     def reset_edit_time(self, path: Path):
         """Reset the last edit time and hash of a file in the database."""
@@ -121,6 +123,7 @@ class FileCache:
         self.conn.commit()
 
 
+@app.command()
 def main(dry_run: bool = typer.Option(False)):
     """VecTrekker
 
@@ -183,7 +186,3 @@ def main(dry_run: bool = typer.Option(False)):
 
         with FileCache(Path.home() / ".vectrekker" / "cache.db") as conn:
             conn.reset_edit_time(entry)
-
-
-if __name__ == "__main__":
-    typer.run(main)
