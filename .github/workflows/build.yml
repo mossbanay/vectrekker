@@ -22,6 +22,6 @@ jobs:
           pip install black ruff isort
       - name: Run lints
         run: |
+          black --check vectrekker
           ruff vectrekker
           isort vectrekker
-          black --check vectrekker
