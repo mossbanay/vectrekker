@@ -16,8 +16,9 @@ pip install vectrekker
 vectrekker --dry-run
 ```
 
-You can adjust the configuration in `~/.vectrekker/config.toml` to add your
-credentials for Pinecone, as well as OpenAI.
+You can adjust the configuration in `~/.vectrekker/config.toml` (created
+automatically after first startup) to add your credentials for Pinecone, as
+well as OpenAI.
 
 ## Scheduling VecTrekker
 
