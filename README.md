@@ -26,6 +26,12 @@ It's suggested that you setup a crontab for VecTrekker to periodically scan
 your directories again, and update any files that are out of date. An example
 crontab scanning every two hours is
 
+```bash
+mkdir -p ~/.vectrekker
+python3.10 -m venv ~/.vectrekker/.venv
+~/.vectrekker/.venv/bin/pip install vectrekker
+```
+
 ```cron
 0 * * * * date >> ~/.vectrekker/vectrekker.log && ~/dev/vectrekker/.venv/bin/vectrekker 2>&1 >> ~/.vectrekker/vectrekker.log
 ```
